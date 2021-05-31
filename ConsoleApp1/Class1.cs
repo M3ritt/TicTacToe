@@ -158,16 +158,25 @@ namespace ConsoleApp1
         }
 
 
-        public void MarkBoard(Tuple<int, int> move, int player, String[,] currBoard)
+        public bool MarkBoard(Tuple<int, int> move, int player, String[,] currBoard)
         {
-         /**
-         * Marks the board based on the given input and player. 
-         * 
-         * @Param: 
-         *  - Tuple<int, int> move : the location on the 2D array (x,y)
-         *  - int player : the int of the player number to decide which marking
-         *  - String[,] currBoard : The current board.
-         */
+            /**
+            * Marks the board based on the given input and player. 
+            * 
+            * @Param: 
+            *  - Tuple<int, int> move : the location on the 2D array (x,y)
+            *  - int player : the int of the player number to decide which marking
+            *  - String[,] currBoard : The current board.
+            */
+            if (move.Item1 == -1)
+            {
+                Console.WriteLine("That is an invalid move. Try again");
+                Console.WriteLine("\n");
+                Console.WriteLine("Please wait 2 second(s), board is loading again.....");
+                Thread.Sleep(2000);
+                return false;
+            }
+                
             string XorO;
             if (player % 2 == 0)
                 XorO = "X";
@@ -176,14 +185,19 @@ namespace ConsoleApp1
 
             int x = move.Item1;
             int y = move.Item2;
+            
             if (currBoard[x, y] != "X" && currBoard[x, y] != "O")
+            {
                 currBoard[x, y] = XorO;
+                return true;
+            }
             else
             {
                 Console.WriteLine("That place is already taken. Try again");
                 Console.WriteLine("\n");
                 Console.WriteLine("Please wait 2 second(s), board is loading again.....");
                 Thread.Sleep(2000);
+                return false;
             }
         }
 

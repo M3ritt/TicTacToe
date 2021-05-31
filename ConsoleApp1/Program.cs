@@ -6,7 +6,8 @@ namespace ConsoleApp1{
 
 		static void Main(string[] args){
 			Game g = new Game();
-			g.InitializeGame();
+			g.Startup();
+			//g.InitializeGame();
         }
 	}
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 
 namespace ConsoleApp1
 {
@@ -20,31 +21,26 @@ namespace ConsoleApp1
             if (sizeOfBoard < 3)
                 GetSizeOfBoard();
 
-            if (PlayComputer())
-                PlayComputer(board.InitializeBoard(sizeOfBoard));
-            else
-                PlayGame(board.InitializeBoard(sizeOfBoard));
+            IsPlayingComputer();
+            InitializeGame();
         }
 
 		public void InitializeGame()
 		{
             if (numOfPlayers == 1)
-                PlayComputer(board.InitializeBoard(sizeOfBoard));
+                PlayComputer(board.InitializeBoard(sizeOfBoard), 1);
             else if (numOfPlayers == 2)
-                PlayGame(board.InitializeBoard(sizeOfBoard));
+                PlayGame(board.InitializeBoard(sizeOfBoard), 1);
             else Startup();
         }
 
-        public Boolean PlayComputer()
+        public void IsPlayingComputer()
         {
             Console.WriteLine("1 or 2 Players?");
             while(!int.TryParse(Console.ReadLine(), out numOfPlayers) || (numOfPlayers > 2))
             {
                 Console.WriteLine("That was invalid. 1 or 2 Players?");
             }
-            if (numOfPlayers == 1)
-                return true;
-            else return false;
         }
 
         public void GetSizeOfBoard()
@@ -56,10 +52,9 @@ namespace ConsoleApp1
             }
         }
 
-        public void PlayComputer(String[,] currBoard)
+        public void PlayComputer(String[,] currBoard, int player)
         {
             String choice;
-            int player = 1;
 
             int flag;
             do
@@ -77,10 +72,11 @@ namespace ConsoleApp1
                 }
                 else
                 {
-                    Console.WriteLine("Player 1 Chance");
+                    Console.WriteLine("Player 1 Turn");
                     board.DisplayBoard(currBoard);
                     choice = Console.ReadLine();
-                    board.MarkBoard(ReadMove(choice), player, currBoard);
+                    if (!board.MarkBoard(ReadMove(choice), player, currBoard))
+                        PlayComputer(currBoard, player);
                 }
                 Console.WriteLine("\n");
                 flag = board.IsGameOver(currBoard);
@@ -106,10 +102,9 @@ namespace ConsoleApp1
             PlayAgain();
         }
 
-		public void PlayGame(String[,] currBoard)
+		public void PlayGame(String[,] currBoard, int player)
 		{
             String choice;
-            int player = 1;
 
             int flag;
             do
@@ -124,12 +119,14 @@ namespace ConsoleApp1
                 }
                 else
                 {
-                    Console.WriteLine("Player 1 Chance");
+                    Console.WriteLine("Player 1 Turn");
                 }
                 Console.WriteLine("\n");
                 board.DisplayBoard(currBoard);
                 choice = Console.ReadLine();
-                board.MarkBoard(ReadMove(choice), player, currBoard);
+
+                if (!board.MarkBoard(ReadMove(choice), player, currBoard))
+                    PlayGame(currBoard, player);
                 flag = board.IsGameOver(currBoard);
                 player++;
             } while (flag != 1 && flag != -1);
@@ -160,15 +157,15 @@ namespace ConsoleApp1
             {
                 Console.WriteLine("Player1 wins: {0} and Player2 wins: {1}", playerOneWins, playerTwoWins);
                 Console.WriteLine("Thank you for playing");
-                Console.ReadLine();
+                Thread.Sleep(2000);
+                System.Environment.Exit(1);
             }
         }
 
         public Tuple<int, int> ReadMove(String num)
         {
-            /*
-            int pos = 1, lookingFor;
-            if (!int.TryParse(num, out lookingFor))
+            int pos = 1;
+            if (!int.TryParse(num, out int lookingFor))
                 return Tuple.Create(-1, -1);
             for (int r = 0; r < sizeOfBoard; r++)
             {
@@ -176,67 +173,11 @@ namespace ConsoleApp1
                 {
                     if (pos == lookingFor)
                         return Tuple.Create(r, c);
+                    pos++;
                     
                 }
             }
             return Tuple.Create(-1, -1);
-            */
-            if (sizeOfBoard == 3)
-            {
-                if (num == "1")
-                    return Tuple.Create(0, 0);
-                else if (num == "2")
-                    return Tuple.Create(0, 1);
-                else if (num == "3")
-                    return Tuple.Create(0, 2);
-                else if (num == "4")
-                    return Tuple.Create(1, 0);
-                else if (num == "5")
-                    return Tuple.Create(1, 1);
-                else if (num == "6")
-                    return Tuple.Create(1, 2);
-                else if (num == "7")
-                    return Tuple.Create(2, 0);
-                else if (num == "8")
-                    return Tuple.Create(2, 1);
-                else
-                    return Tuple.Create(2, 2);
-            }
-            else
-            {
-                if (num == "1")
-                    return Tuple.Create(0, 0);
-                else if (num == "2")
-                    return Tuple.Create(0, 1);
-                else if (num == "3")
-                    return Tuple.Create(0, 2);
-                else if (num == "4")
-                    return Tuple.Create(0, 3);
-                else if (num == "5")
-                    return Tuple.Create(1, 0);
-                else if (num == "6")
-                    return Tuple.Create(1, 1);
-                else if (num == "7")
-                    return Tuple.Create(1, 2);
-                else if (num == "8")
-                    return Tuple.Create(1, 3);
-                else if (num == "9")
-                    return Tuple.Create(2, 0);
-                else if (num == "10")
-                    return Tuple.Create(2, 1);
-                else if (num == "11")
-                    return Tuple.Create(2, 2);
-                else if (num == "12")
-                    return Tuple.Create(2, 3);
-                else if (num == "13")
-                    return Tuple.Create(3, 0);
-                else if (num == "14")
-                    return Tuple.Create(3, 1);
-                else if (num == "15")
-                    return Tuple.Create(3, 2);
-                else return Tuple.Create(3, 3);
-            }
-            
         }
     }
 }
